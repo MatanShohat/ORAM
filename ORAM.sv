@@ -13,10 +13,20 @@ module oram_module(
 	output [(8*a)-1:0] r_value, // only in read operation, this output holds the value of block number rw_block_number
 	output output_ready); // indicates there are valid outputs on the line
 	
-	typedef struct memory_tuple {
+	typedef struct memory_pos {
 		bit [d-2:0] pos; // the bt leaf which the tuple is associated with (word) , d-1 bits are needed (effectivly only d-1 bit word is valid (e.g., 0*(fd-1) is valid))
-		bit [d-1:0] b; // the block number containing the word val (word), d bits are needed
+		bit empty_n; // tells if pos is valid, active low ( empty_n=0 - pos is not valid, empty_n=1 - pos is valid)
+	} memory_pos;
+	
+	typedef struct memory_val {
 		byte [a-1:0] val; // value of the given block (a bytes)
+		bit empty_n; // tells if val is valid, active low ( empty_n=0 - val is not valid, empty_n=1 - val is valid)
+	} memory_val;
+	
+	typedef struct memory_tuple {
+		memory_pos b_pos;
+		bit [d-1:0] b_number; // the block number containing the word val (word), d bits are needed
+		memory_val b_val;
 		bit empty_n; // tells if the tuple is valid, active low ( empty_n=0 - block is empty, empty_n=1 - block is full)
 	} memory_tuple;
 
@@ -26,7 +36,7 @@ module oram_module(
 
 	typedef struct oram_struct {
 		memory_bucket oram_tree [(2<<d)-1:0]; // defining the binary tree holding the memory
-		byte [(2<<d)-1:0][3:0] pos_map; // position map, block number(4 bytes (2^4 blocks) x pos(4 bytes)
+		memory_pos pos_map [(2<<d)-1:0]; // position map, block number x pos
 	} oram_struct;
 
 	initial begin
@@ -40,8 +50,10 @@ module oram_module(
 			output_ready <= 0;
 		end else begin // input is ready, do operation
 			if (rw_indicator == 0) begin // oread operation
+				$display ("performing read operation on block number %h (hexadecimal)", rw_block_number);
 				// implement oread
 			end else begin // owrite operation
+				$display ("performing write operation on block number %h (hexadecimal) with value %h (hexadecimal)", rw_block_number, w_value);
 				// implement owrite
 			end
 		end
