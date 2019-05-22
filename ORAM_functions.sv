@@ -3,6 +3,8 @@ const integer n=2<<8; // overall size of the memory (in bytes)
 const integer d=6; // binary tree depth log(n/a), also represent the number of bits needed to describe block number
 const integer K=3; // number of tuples per bucket (per node)
 
+package oram_function_package;
+
 function memory_val fetch(input [d-1:0] block_number);
 	memory_val r_value;
 	memory_pos b_pos = oram.pos_map[block_number]; // get pos of input block
@@ -131,3 +133,5 @@ task flush;
 	end
 	
 endtask
+
+endpackage : oram_function_package

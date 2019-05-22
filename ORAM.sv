@@ -3,6 +3,8 @@ const integer n=2<<8; // overall size of the memory (in bytes)
 const integer d=6; // binary tree depth log(n/a), also represent the number of bits needed to describe block number
 const integer K=3; // number of tuples per bucket (per node)
 
+import oram_function_package::*;
+
 module oram_module(
 	input [d-1:0] rw_block_number, // in both read and write operations, this input holds the requested address (block number)
 	input [(8*a)-1:0] w_value, // only in write operation, this input holds the value which will be written to block number rw_block_number
