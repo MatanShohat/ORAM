@@ -40,10 +40,10 @@ package oramPkg;
 			bit [d-1:0] current_block_number;
 			memory_bucket current_bucket;
 			memory_tuple current_tuple;
+			integer i;
+			integer j;
 			
-			b_pos = oram.pos_map[block_number];
-			
-			//memory_pos b_pos = oram.pos_map[block_number]; // get pos of input block
+			b_pos = oram.pos_map[block_number]; // get pos of input block
 
 			if (b_pos.empty_n == 0) begin // if block is not assigned to pos map
 					b_pos.pos = $urandom_range((2<<(d-1))-1,0); // assign it to random leaf
@@ -56,7 +56,7 @@ package oramPkg;
 			current_bucket = oram.oram_tree[current_block_number - 1]; // check if root contains the required block
 			
 			
-			for (int j=0; j < (K-1); j=j++) begin // go over root bucket
+			for (j=0; j < (K-1); j=j+1) begin // go over root bucket
 					current_tuple = current_bucket.bucket[j]; // for each tuple in bucket
 					if (current_tuple.empty_n && current_tuple.b_pos.empty_n && current_tuple.b_pos.pos == b_pos.pos && current_tuple.b_number == block_number ) begin // if given tuple matches requested block number and block pos
 							r_value = current_tuple.b_val; // return its value
@@ -64,7 +64,7 @@ package oramPkg;
 					end
 			end
 			
-			for (int i=0; i< (d-1); i=i+1) begin
+			for (i=0; i< (d-1); i=i+1) begin
 					current_bit = b_pos.pos[i]; // get current bit from pos
 					current_block_number = 2*current_block_number + current_bit; // advance down the tree
 					current_bucket = oram.oram_tree[current_block_number - 1]; // get matched tree node
@@ -94,9 +94,10 @@ package oramPkg;
 	function void put_back(memory_tuple new_block_tuple, oram_struct oram);
 			memory_bucket current_bucket;
 			memory_tuple current_tuple;
+			integer j;
 			
 			current_bucket = oram.oram_tree[0]; // get root bucket
-			for (int j=0; j< (K-1); j=j+1) begin // go over bucket
+			for (j=0; j< (K-1); j=j+1) begin // go over bucket
 					current_tuple = current_bucket.bucket[j]; // for each tuple in bucket
 					if (current_tuple.empty_n == 0) begin // if empty tuple was found
 							current_bucket.bucket[j] = new_block_tuple; // insert the new tuple
@@ -114,7 +115,7 @@ package oramPkg;
 			input depth; // indicates which node try to push
 			bit current_bit;
 			bit [d-1:0] current_block_number;
-			//integer i;
+			integer i;
 			integer j;
 			integer k;
 			
@@ -128,7 +129,7 @@ package oramPkg;
 			current_block_number = 1; // remember the 1 offset
 
 			// get to the node which we try to push
-			for (int i=0; i< (depth - 1); i=i+1) begin
+			for (i=0; i< (depth - 1); i=i+1) begin
 					current_bit = pos[i]; // get current bit from pos
 					current_block_number = current_block_number<<1 + current_bit; // advance down the tree
 			end
@@ -136,14 +137,14 @@ package oramPkg;
 			higher_bucket = oram.oram_tree[current_block_number - 1]; // bucket which contains the tuples from the up level which want to be pushed down
 			lower_bucket = oram.oram_tree[current_block_number - 1]; // bucket which contains the tuples from the down level
 			
-			for (int j=0; j< (K-1); j=j+1) begin // go over higher bucket
+			for (j=0; j< (K-1); j=j+1) begin // go over higher bucket
 					current_higher_tuple = higher_bucket.bucket[j]; // for each tuple in bucket
 					if (current_higher_tuple.empty_n == 0 || current_higher_tuple.b_pos.empty_n == 0)  begin
 							continue;
 					end else if (current_higher_tuple.empty_n == 0 && current_higher_tuple.b_pos.empty_n == 0 && current_higher_tuple.b_pos.pos[depth - 1] != pos[depth - 1]) begin
 							continue;
 					end else begin // tuple's pos still in path, try to push it down one level
-							for (int k=0; k< (K-1); k=k+1) begin // go over lower bucket
+							for (k=0; k< (K-1); k=k+1) begin // go over lower bucket
 									current_lower_tuple = lower_bucket.bucket[k]; // for each tuple in bucket
 									if (current_lower_tuple.empty_n == 1 || current_lower_tuple.b_pos.empty_n == 1) begin // if it is empty
 											lower_bucket.bucket[k] = current_higher_tuple; // push the higher tuple down to the empty spot
@@ -161,11 +162,12 @@ package oramPkg;
 	endtask
 	
 	task flush;
-	
 			bit [d-2:0] pos_star;
+			integer i;
+			integer j;
 			pos_star = $urandom_range((2<<(d-1))-1,0); // choose a random leaf
-			for (int i=d-1; i>0; i=i-1) begin // start from the depth of leafs - 1 and go up
-					for (int j=i; i<d; j=j+1) begin // try to push down the ith level node down to the leaf if possibole
+			for (i=d-1; i>0; i=i-1) begin // start from the depth of leafs - 1 and go up
+					for (j=i; i<d; j=j+1) begin // try to push down the ith level node down to the leaf if possibole
 							push_down_one_node_one_level(pos_star, j); // push down iteration
 					end
 			end
