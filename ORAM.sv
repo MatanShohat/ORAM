@@ -7,8 +7,8 @@ module oram_module(
 	input input_ready, // indicates there are valid inputs on the line
 	input clk, // core's clock
 	input rst, // reset signal, active high
-	output [(8*a)-1:0] r_value, // only in read operation, this output holds the value of block number rw_block_number
-	output output_ready); // indicates there are valid outputs on the line
+	output logic [(8*a)-1:0] r_value, // only in read operation, this output holds the value of block number rw_block_number
+	output logic output_ready); // indicates there are valid outputs on the line
 	
 	
 
