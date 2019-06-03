@@ -157,7 +157,7 @@ package oramPkg;
 			end
 	
 			oram.oram_tree[current_block_number - 1] = lower_bucket; // update oram lower node
-			//current_block_number = (current_block_number - pos[i])>>1; // go back up the tree
+			current_block_number = (current_block_number - pos[i])>>1; // go back up the tree
 			oram.oram_tree[current_block_number - 1] = higher_bucket; // update oram higher node
 	endtask
 	
