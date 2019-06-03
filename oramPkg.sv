@@ -109,8 +109,8 @@ package oramPkg;
 	endfunction
 	
 	// this task pushes one node (in level depth) one level lower down the tree with respect to pos
-	task push_down_one_node_one_level;
-			oram_struct oram;
+	task automatic push_down_one_node_one_level;
+			ref oram_struct oram; //
 			input [d-2:0] pos; // indicates where to go
 			input depth; // indicates which node try to push
 			bit current_bit;
@@ -161,14 +161,15 @@ package oramPkg;
 			oram.oram_tree[current_block_number - 1] = higher_bucket; // update oram higher node
 	endtask
 	
-	task flush;
+	task automatic flush;
+			ref oram_struct oram;
 			bit [d-2:0] pos_star;
 			integer i;
 			integer j;
 			pos_star = $urandom_range((2<<(d-1))-1,0); // choose a random leaf
 			for (i=d-1; i>0; i=i-1) begin // start from the depth of leafs - 1 and go up
 					for (j=i; i<d; j=j+1) begin // try to push down the ith level node down to the leaf if possibole
-							push_down_one_node_one_level(pos_star, j); // push down iteration
+							push_down_one_node_one_level(oram, pos_star, j); // push down iteration
 					end
 			end
 
