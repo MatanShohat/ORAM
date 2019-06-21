@@ -27,19 +27,11 @@ module oram_tb;
 	always
 	begin
 		#5 clk = 1;
-    	#5 clk = 0;
+		#5 clk = 0;
 	end
 	
-	
-	/*
-	initial begin
 
-		
-	end
-	*/
-	
-
-  	// Test stimulus
+	// Test stimulus
 	initial
 	begin
 		$display ("Start test");
@@ -56,24 +48,24 @@ module oram_tb;
             
 		//end
         
-        #5
+		#5
 		// read process
 		rw_indicator = 0;
 		pass = 1;
 		//for(int i=0;i<2^d;i++) begin
 			block_num = 1;
-            rst = 1;
-            #10;
-            rst = 0;
-            #10
+			rst = 1;
+			#10;
+			rst = 0;
+			#10
 			wait (output_ready == 1'b1);
 			if ( read_val != 2 )
 				pass = 0;
 		//end
         
 		$display ("Test done");
-        #100;
-        $stop;
+		#100;
+		$stop;
 	end
 
 endmodule

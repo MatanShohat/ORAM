@@ -26,31 +26,31 @@ module oram_module(
 			r_value <= 0;
 			output_ready <= 0;
 		end else begin // input is ready, do operation
-      output_ready <= 0;
+	    output_ready <= 0;
 			if (rw_indicator == 0) begin // oread operation
 				$display ("performing read operation on block number %h (hexadecimal)", rw_block_number);
-        //print_oram(oram);
+				//print_oram(oram);
 				read_val = fetch(oram, rw_block_number);
 				new_tuple = update_position_map(rw_block_number, read_val);
 				put_back(oram, new_tuple);
 				flush(oram);
-        r_value <= read_val.val;
-        output_ready <= 1;
-        //print_oram(oram);
+				r_value <= read_val.val;
+				output_ready <= 1;
+				//print_oram(oram);
 			end else begin // owrite operation
 				$display ("performing write operation on block number %h (hexadecimal) with value %h (hexadecimal)", rw_block_number, w_value);
-        print_oram(oram);
+				print_oram(oram);
 				read_val = fetch(oram, rw_block_number);
 				read_val.val = w_value;
-        read_val.empty_n = 1;
+				read_val.empty_n = 1;
 				new_tuple = update_position_map(rw_block_number, read_val);
 				put_back(oram, new_tuple);
+				print_oram(oram);
 				flush(oram);
-        output_ready <= 1;
-        $display ("performing write operation on block number %h (hexadecimal) with value %h (hexadecimal) is DONE!", rw_block_number, w_value);
-        print_oram(oram);
+				output_ready <= 1;
+				$display ("performing write operation on block number %h (hexadecimal) with value %h (hexadecimal) is DONE!", rw_block_number, w_value);
+				print_oram(oram);
 			end
-
 		end
 
 	end
