@@ -31,7 +31,7 @@ package oramPkg;
 		memory_bucket oram_tree [(2<<d)-1:0]; // defining the binary tree holding the memory
 		memory_pos pos_map [(2<<d)-1:0]; // position map, block number x pos
 	} oram_struct;
-    
+
     function automatic void init_memory(ref oram_struct oram);
 			foreach(oram.pos_map[i]) begin
 				oram.pos_map[i].pos = '0;
@@ -121,18 +121,18 @@ package oramPkg;
 
 			current_bucket = oram.oram_tree[0]; // get root bucket
 			for (j=0; j< (K-1); j=j+1) begin // go over bucket
-                    //$display("go over the bucket");
+          //$display("go over the bucket");
 					current_tuple = current_bucket.bucket[j]; // for each tuple in bucket
 					if (current_tuple.empty_n == 0) begin // if empty tuple was found
-							current_bucket.bucket[j] = new_block_tuple; // insert the new tuple
-                            //$display("put_back End");
+							oram.oram_tree[0].bucket[j] = new_block_tuple; // insert the new tuple
+              //$display("put_back End");
 							return;
 					end
 			end
 			$display ("overflow");
 			return;
 	endfunction
-    
+
     function void print_oram(oram_struct oram);
         integer i;
         // print the memoet map
@@ -144,12 +144,12 @@ package oramPkg;
                 $write("%d ", oram.pos_map[i].pos);
             end
         end
-        
+
         // print the tree
         $display("oram_tree:");
         print_oram_tree(oram,1);
     endfunction
-    
+
     task automatic print_oram_tree;
         ref oram_struct oram;
         input integer node;
@@ -157,7 +157,7 @@ package oramPkg;
         //check we are not done yet
         if(node > 2<<d ) begin
             $display("");
-           return; 
+           return;
         end
         if (node == 2 || node == 4 || node == 8 || node == 16 || node == 32 || node == 64)
             $display("");
