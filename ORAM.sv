@@ -16,12 +16,12 @@ module oram_module(
 	memory_tuple new_tuple;
 
 	initial begin
-		init_memory(oram);
+		//oram_struct oram; // defining the oram
+        init_memory(oram);
 		$display ("oram module has been successfully created");
 	end
 
 	always@(posedge clk iff (input_ready == 1 && rst == 0) or posedge rst) begin // enter only in posedge clk only if input is ready, asynchronous rst signal
-
 		if (rst) begin // reset output signals
 			r_value <= 0;
 			output_ready <= 0;
@@ -29,21 +29,26 @@ module oram_module(
       output_ready <= 0;
 			if (rw_indicator == 0) begin // oread operation
 				$display ("performing read operation on block number %h (hexadecimal)", rw_block_number);
+                //print_oram(oram);
 				read_val = fetch(oram, rw_block_number);
 				new_tuple = update_position_map(rw_block_number, read_val);
 				put_back(oram, new_tuple);
 				flush(oram);
                 r_value <= read_val.val;
                 output_ready <= 1;
+                //print_oram(oram);
 			end else begin // owrite operation
 				$display ("performing write operation on block number %h (hexadecimal) with value %h (hexadecimal)", rw_block_number, w_value);
+                print_oram(oram);
 				read_val = fetch(oram, rw_block_number);
 				read_val.val = w_value;
+                read_val.empty_n = 1;
 				new_tuple = update_position_map(rw_block_number, read_val);
 				put_back(oram, new_tuple);
 				flush(oram);
                 output_ready <= 1;
                 $display ("performing write operation on block number %h (hexadecimal) with value %h (hexadecimal) is DONE!", rw_block_number, w_value);
+                print_oram(oram);
 			end
 
 		end

@@ -31,8 +31,8 @@ package oramPkg;
 		memory_bucket oram_tree [(2<<d)-1:0]; // defining the binary tree holding the memory
 		memory_pos pos_map [(2<<d)-1:0]; // position map, block number x pos
 	} oram_struct;
-
-	function automatic void init_memory(ref oram_struct oram);
+    
+    function automatic void init_memory(ref oram_struct oram);
 			foreach(oram.pos_map[i]) begin
 				oram.pos_map[i].pos = '0;
 				oram.pos_map[i].empty_n = '0;
@@ -47,7 +47,6 @@ package oramPkg;
 					oram.oram_tree[i].bucket[j].empty_n = '0;
 				end
 			end
-
 	endfunction
 
 	function automatic memory_val fetch(ref oram_struct oram, input [d-1:0] block_number);
@@ -101,7 +100,7 @@ package oramPkg;
 
 	endfunction
 
-	function automatic memory_tuple update_position_map(input [d-1:0] block_number, input memory_val block_val);
+	function memory_tuple update_position_map(input [d-1:0] block_number, input memory_val block_val);
 			memory_tuple new_block_tuple; // create new tuple
 
             //$display("update_position_map Start");
@@ -133,6 +132,50 @@ package oramPkg;
 			$display ("overflow");
 			return;
 	endfunction
+    
+    function void print_oram(oram_struct oram);
+        integer i;
+        // print the memoet map
+        $display("memory map:");
+        for (i=0 ; i< (2<<d)-1 ; i++) begin
+            if (oram.pos_map[i].empty_n == 0) begin
+                $write("X ");
+            end else begin
+                $write("%d ", oram.pos_map[i].pos);
+            end
+        end
+        
+        // print the tree
+        $display("oram_tree:");
+        print_oram_tree(oram,1);
+    endfunction
+    
+    task automatic print_oram_tree;
+        ref oram_struct oram;
+        input integer node;
+        integer i;
+        //check we are not done yet
+        if(node > 2<<d ) begin
+            $display("");
+           return; 
+        end
+        if (node == 2 || node == 4 || node == 8 || node == 16 || node == 32 || node == 64)
+            $display("");
+        //$display("The bucket in the %d node",node);
+        // print the bucket
+        $write("|");
+        for (i = 0; i<K; i++) begin
+            if (oram.oram_tree[node-1].bucket[i].b_val.empty_n == 0)
+                $write("X ");
+            else
+                $write("%p ",oram.oram_tree[node-1].bucket[i].b_val.val);
+        end
+        $write("|");
+        //left
+        print_oram_tree(oram,node+1);
+        //right
+        //print_oram_tree(oram,node*2+1);
+	endtask
 
 	// this task pushes one node (in level depth) one level lower down the tree with respect to pos
 	task automatic push_down_one_node_one_level;
