@@ -124,7 +124,9 @@ package oramPkg;
           //$display("go over the bucket");
 					current_tuple = current_bucket.bucket[j]; // for each tuple in bucket
 					if (current_tuple.empty_n == 0) begin // if empty tuple was found
-							oram.oram_tree[0].bucket[j] = new_block_tuple; // insert the new tuple
+							oram.oram_tree[0].bucket[j] = new_block_tuple; // insert the new tuple to tree
+							oram.pos_map[new_block_tuple.b_number] = new_block_tuple.b_pos; //insert to pos map
+
               //$display("put_back End");
 							return;
 					end
