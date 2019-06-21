@@ -211,22 +211,22 @@ package oramPkg;
             //$display("Found");
 
 			higher_bucket = oram.oram_tree[current_block_number - 1]; // bucket which contains the tuples from the up level which want to be pushed down
-			current_bit = pos[i]; // get current bit from pos
+			current_bit = pos[depth - 1]; // get current bit from pos
 			current_block_number = current_block_number<<1 + current_bit; // advance down the tree
-            lower_bucket = oram.oram_tree[current_block_number - 1]; // bucket which contains the tuples from the down level
+      lower_bucket = oram.oram_tree[current_block_number - 1]; // bucket which contains the tuples from the down level
 
 			for (j=0; j< (K-1); j=j+1) begin // go over higher bucket
                     //$display("Go over higher buckets");
 					current_higher_tuple = higher_bucket.bucket[j]; // for each tuple in bucket
 					if (current_higher_tuple.empty_n == 0 || current_higher_tuple.b_pos.empty_n == 0)  begin
 							continue;
-					end else if (current_higher_tuple.empty_n == 0 && current_higher_tuple.b_pos.empty_n == 0 && current_higher_tuple.b_pos.pos[depth - 1] != pos[depth - 1]) begin
+					end else if (current_higher_tuple.b_pos.pos[depth - 1] != pos[depth - 1]) begin
 							continue;
 					end else begin // tuple's pos still in path, try to push it down one level
 							for (kk=0; kk< (K-1); kk=kk+1) begin // go over lower bucket
-                                    //$display("j = %d, k = %d",j,kk);
+                	//$display("j = %d, k = %d",j,kk);
 									current_lower_tuple = lower_bucket.bucket[kk]; // for each tuple in bucket
-									if (current_lower_tuple.empty_n == 1 || current_lower_tuple.b_pos.empty_n == 1) begin // if it is empty
+									if (current_lower_tuple.empty_n == 0) begin // if it is empty
 											lower_bucket.bucket[kk] = current_higher_tuple; // push the higher tuple down to the empty spot
 											current_higher_tuple.empty_n = 0;
 											higher_bucket.bucket[j] = current_higher_tuple; // assign it as invalid in higher bucket
@@ -237,9 +237,9 @@ package oramPkg;
 			end
 
 			oram.oram_tree[current_block_number - 1] = lower_bucket; // update oram lower node
-			current_block_number = (current_block_number - pos[i])>>1; // go back up the tree
+			current_block_number = (current_block_number - pos[depth - 1])>>1; // go back up the tree
 			oram.oram_tree[current_block_number - 1] = higher_bucket; // update oram higher node
-            //$display("Leaf Push_Down End");
+      //$display("Leaf Push_Down End");
 	endtask
 
 	task automatic flush;
