@@ -9,45 +9,45 @@ module oram_module(
 	input rst, // reset signal, active high
 	output logic [(8*a)-1:0] r_value, // only in read operation, this output holds the value of block number rw_block_number
 	output logic output_ready); // indicates there are valid outputs on the line
-	
+
 	//wire read_value;
 	oram_struct oram;
 	memory_val read_val;
 	memory_tuple new_tuple;
-	
+
 	initial begin
 		//oram_struct oram; // defining the oram
 		$display ("oram module has been successfully created");
 	end
-	
+
 	always@(posedge clk iff (input_ready == 1 && rst == 0) or posedge rst) begin // enter only in posedge clk only if input is ready, asynchronous rst signal
 
 		if (rst) begin // reset output signals
 			r_value <= 0;
 			output_ready <= 0;
 		end else begin // input is ready, do operation
-            output_ready <= 0;
+      output_ready <= 0;
 			if (rw_indicator == 0) begin // oread operation
 				$display ("performing read operation on block number %h (hexadecimal)", rw_block_number);
-				read_val = fetch(rw_block_number,oram);
+				read_val = fetch(oram, rw_block_number);
 				new_tuple = update_position_map(rw_block_number, read_val);
-				put_back(new_tuple, oram);
+				put_back(oram, new_tuple);
 				flush(oram);
                 r_value <= read_val.val;
                 output_ready <= 1;
 			end else begin // owrite operation
 				$display ("performing write operation on block number %h (hexadecimal) with value %h (hexadecimal)", rw_block_number, w_value);
-				read_val = fetch(rw_block_number,oram);
+				read_val = fetch(oram, rw_block_number);
 				read_val.val = w_value;
 				new_tuple = update_position_map(rw_block_number, read_val);
-				put_back(new_tuple, oram);
+				put_back(oram, new_tuple);
 				flush(oram);
                 output_ready <= 1;
                 $display ("performing write operation on block number %h (hexadecimal) with value %h (hexadecimal) is DONE!", rw_block_number, w_value);
 			end
 
 		end
-		
+
 	end
 
 endmodule
