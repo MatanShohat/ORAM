@@ -16,7 +16,7 @@ module oram_module(
 	memory_tuple new_tuple;
 
 	initial begin
-		//oram_struct oram; // defining the oram
+		init_memory(oram);
 		$display ("oram module has been successfully created");
 	end
 

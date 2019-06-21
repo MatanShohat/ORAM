@@ -32,8 +32,25 @@ package oramPkg;
 		memory_pos pos_map [(2<<d)-1:0]; // position map, block number x pos
 	} oram_struct;
 
+	function automatic void init_memory(ref oram_struct oram);
+			foreach(oram.pos_map[i]) begin
+				oram.pos_map[i].pos = '0;
+				oram.pos_map[i].empty_n = '0;
+			end
+			foreach(oram.oram_tree[i]) begin
+				foreach(oram.oram_tree[i].bucket[j]) begin
+					oram.oram_tree[i].bucket[j].b_pos.pos = '0;
+					oram.oram_tree[i].bucket[j].b_pos.empty_n = '0;
+					oram.oram_tree[i].bucket[j].b_number = '0;
+					oram.oram_tree[i].bucket[j].b_val.val = '0;
+					oram.oram_tree[i].bucket[j].b_val.empty_n = '0;
+					oram.oram_tree[i].bucket[j].empty_n = '0;
+				end
+			end
 
-	function memory_val fetch(ref oram_struct oram, input [d-1:0] block_number);
+	endfunction
+
+	function automatic memory_val fetch(ref oram_struct oram, input [d-1:0] block_number);
 			memory_val r_value;
 			memory_pos b_pos;
 			bit current_bit;
@@ -84,7 +101,7 @@ package oramPkg;
 
 	endfunction
 
-	function memory_tuple update_position_map(input [d-1:0] block_number, input memory_val block_val);
+	function automatic memory_tuple update_position_map(input [d-1:0] block_number, input memory_val block_val);
 			memory_tuple new_block_tuple; // create new tuple
 
             //$display("update_position_map Start");
@@ -97,7 +114,7 @@ package oramPkg;
 			return new_block_tuple;
 	endfunction
 
-	function void put_back(ref oram_struct oram, input memory_tuple new_block_tuple);
+	function automatic void put_back(ref oram_struct oram, input memory_tuple new_block_tuple);
 			memory_bucket current_bucket;
 			memory_tuple current_tuple;
 			integer j;
