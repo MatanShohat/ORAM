@@ -45,7 +45,14 @@ module oram_tb;
 			block_num = 1;
 			input_ready = 1;
 			wait (output_ready == 1'b1);
-            
+            rst = 1;
+			#10;
+			rst = 0;
+        	rw_indicator = 1;
+			write_val = 10;
+			block_num = 3;
+			input_ready = 1;
+			wait (output_ready == 1'b1);
 		//end
         
 		#5
@@ -62,10 +69,11 @@ module oram_tb;
 			if ( read_val != 2 )
 				pass = 0;
 		//end
-        
+        #5;
 		$display ("Test done");
+        $stop;
 		#100;
-		$stop;
+		
 	end
 
 endmodule

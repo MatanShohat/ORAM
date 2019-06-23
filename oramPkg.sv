@@ -130,7 +130,8 @@ package oramPkg;
 		return;
 	endfunction
 
-	function void print_oram(oram_struct oram);
+	task automatic print_oram;
+        ref oram_struct oram;
 		integer i;
 		// print the memoet map
 		$display("memory map:");
@@ -146,28 +147,28 @@ package oramPkg;
 		$display("");
 		$display("oram_tree:");
 		print_oram_tree(oram,1);
-	endfunction
+	endtask
 
 	task automatic print_oram_tree;
 		ref oram_struct oram;
 		input integer node;
 		integer i;
 		//check we are not done yet
-		if(node > 2<<d ) begin
+		if(node > 1<<d ) begin
 			$display("");
 			return;
 		end
-		if (node == 2 || node == 4 || node == 8 || node == 16 || node == 32 || node == 64) begin
+		if (node == 2 || node == 4 || node == 8 || node == 16 || node == 32) begin
 			$display("");
-			//$display("The bucket in the %d node",node);
-			// print the bucket
-			$write("|");
-			for (i = 0; i<K; i++) begin
-				if (oram.oram_tree[node-1].bucket[i].empty_n == 0) begin
-					$write("X ");
-				end else begin
-					$write("(%p,%p,%p) ",oram.oram_tree[node-1].bucket[i].b_pos.pos,oram.oram_tree[node-1].bucket[i].b_number,oram.oram_tree[node-1].bucket[i].b_val.val);
-				end
+        end
+        //$display("The bucket in the %d node",node);
+		// print the bucket
+		$write("|");
+        for (i = 0; i<K; i++) begin
+			if (oram.oram_tree[node-1].bucket[i].empty_n == 0) begin
+				$write("X ");
+            end else begin
+				$write("(%p,%p,%p) ",oram.oram_tree[node-1].bucket[i].b_pos.pos,oram.oram_tree[node-1].bucket[i].b_number,oram.oram_tree[node-1].bucket[i].b_val.val);
 			end
 		end
 		$write("|");
@@ -249,6 +250,7 @@ package oramPkg;
 		integer j;
 		//$display("Flush Start");
 		pos_star = $urandom_range((2<<(d-1))-1,0); // choose a random leaf
+		$display("Flush Begin with Pos: %d",pos_star);
 		for (i=d-1; i>0; i=i-1) begin // start from the depth of leafs - 1 and go up
 			for (j=i; j<d; j=j+1) begin // try to push down the ith level node down to the leaf if possibole
 				//$display("FLUSH iter: d=%d, i= %d, j= %d",d,i,j);
