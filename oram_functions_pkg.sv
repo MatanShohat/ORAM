@@ -1,5 +1,5 @@
 `timescale 1ns/10ps
-package oramPkg;
+package oram_functions_pkg;
 	//Constants decleration
 	parameter BYTE_WIDTH = 8;
 	parameter BYTES_PER_BLOCK=1<<2; // alpha parameter, number of bytes per block (in bytes)

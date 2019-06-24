@@ -1,5 +1,5 @@
 `timescale 1ns/10ps
-import oramPkg::*;
+import oram_functions_pkg::*;
 
 module oram_tb;
 	logic clk = 0;

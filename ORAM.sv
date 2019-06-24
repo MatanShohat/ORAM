@@ -1,5 +1,5 @@
 `timescale 1ns/10ps
-import oramPkg::*;
+import oram_functions_pkg::*;
 
 module oram_module(
 	input [TREE_DEPTH-1:0] rw_block_number, // in both read and write operations, this input holds the requested address (block number)
