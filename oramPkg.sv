@@ -1,3 +1,4 @@
+`timescale 1ns/10ps
 package oramPkg;
 	//Constants decleration
 	parameter a=2<<2; // alpha parameter, number of bytes per block (in bytes)

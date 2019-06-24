@@ -1,3 +1,4 @@
+`timescale 1ns/10ps
 import oramPkg::*;
 
 module oram_tb;
