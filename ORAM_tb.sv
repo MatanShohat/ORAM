@@ -4,13 +4,13 @@ import oramPkg::*;
 module oram_tb;
 	timeunit 1ns;
 
-	reg clk = 0;
-	reg [(8*a)-1:0] read_val;
-	reg [(8*a)-1:0] write_val;
-	reg output_ready;
-	reg rst, rw_indicator, input_ready;
-	reg [d-1:0] block_num;
-	reg pass;
+	logic clk = 0;
+	logic [(BYTE_WIDTH*BYTES_PER_BLOCK)-1:0] read_val;
+	logic [(BYTE_WIDTH*BYTES_PER_BLOCK)-1:0] write_val;
+	logic output_ready;
+	logic rst, rw_indicator, input_ready;
+	logic [TREE_DEPTH-1:0] block_num;
+	logic pass;
 	
 
 
@@ -41,7 +41,7 @@ module oram_tb;
 		rst = 0;
 		// write process
 		rw_indicator = 1;
-		//for(int i=0;i<2^d;i++) begin
+		//for(int i=0;i<(1<<TREE_DEPTH);i++) begin
 			write_val = 2;
 			block_num = 1;
 			input_ready = 1;
@@ -60,7 +60,7 @@ module oram_tb;
 		// read process
 		rw_indicator = 0;
 		pass = 1;
-		//for(int i=0;i<2^d;i++) begin
+		//for(int i=0;i<(1<<TREE_DEPTH);i++) begin
 			block_num = 1;
 			rst = 1;
 			#10;

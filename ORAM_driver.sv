@@ -4,7 +4,8 @@ module oram_driver #(
     parameter INIT_FILE = "mem.hex",
     parameter ADDRESS_WIDTH = 12, // n= 1 << ADDRESS_WIDTH
     parameter BYTE_WIDTH = 8,
-    parameter BYTES_PER_WORD = 4 // a = BYTES_PER_WORD
+    parameter BYTES_PER_WORD = 4, // BYTES_PER_WORD
+    parameter BYTES_PER_BLOCK = BYTES_PER_WORD
 )(
     input logic clock,
     input logic reset,
