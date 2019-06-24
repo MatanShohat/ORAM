@@ -18,7 +18,7 @@ module oram_module(
 
 	initial begin
 		//oram_struct oram; // defining the oram
-    init_memory(oram);
+    		init_memory(oram);
 		$display ("oram module has been successfully created");
 	end
 
@@ -27,7 +27,7 @@ module oram_module(
 			r_value <= 0;
 			output_ready <= 0;
 		end else begin // input is ready, do operation
-	    output_ready <= 0;
+	    		output_ready <= 0;
 			if (rw_indicator == 0) begin // oread operation
 				$display ("performing read operation on block number %h (hexadecimal)", rw_block_number);
 				//print_oram(oram);

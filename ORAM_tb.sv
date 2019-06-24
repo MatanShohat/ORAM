@@ -2,8 +2,6 @@
 import oramPkg::*;
 
 module oram_tb;
-	timeunit 1ns;
-
 	logic clk = 0;
 	logic [(BYTE_WIDTH*BYTES_PER_BLOCK)-1:0] read_val;
 	logic [(BYTE_WIDTH*BYTES_PER_BLOCK)-1:0] write_val;
@@ -12,8 +10,6 @@ module oram_tb;
 	logic [TREE_DEPTH-1:0] block_num;
 	logic pass;
 	
-
-
 	oram_module oram(
 	block_num,
 	write_val,
@@ -25,16 +21,12 @@ module oram_tb;
 	output_ready);	
 
 	// Clock generator
-	always
-	begin
-		#5 clk = 1;
-		#5 clk = 0;
+	always begin
+		#5 clk = ~clk;
 	end
 	
-
 	// Test stimulus
-	initial
-	begin
+	initial begin
 		$display ("Start test");
 		rst = 1;
 		#50;
@@ -46,10 +38,10 @@ module oram_tb;
 			block_num = 1;
 			input_ready = 1;
 			wait (output_ready == 1'b1);
-            rst = 1;
+    			rst = 1;
 			#10;
 			rst = 0;
-        	rw_indicator = 1;
+        		rw_indicator = 1;
 			write_val = 10;
 			block_num = 3;
 			input_ready = 1;
@@ -70,12 +62,11 @@ module oram_tb;
 			if ( read_val != 2 )
 				pass = 0;
 		//end
-        #5;
-		$display ("Test done");
-        $stop;
-		#100;
-		
-	end
 
+       		#5;
+		$display ("Test done");
+        	$stop;
+		#100;		
+	end
 endmodule
 
