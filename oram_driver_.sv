@@ -6,7 +6,7 @@ module oram_driver #(
 	parameter BYTE_WIDTH = 8,
 	parameter BYTES_PER_WORD = 4,
 	parameter BYTES_PER_BLOCK = BYTES_PER_WORD,
-	parameter MEMORY_SIZE=1<<ADDRESS_WIDTH, // n parameter, overall size of the memory (in bytes)
+	parameter MEMORY_SIZE=1<<ADDRESS_WIDTH, // n parameter, overall size of the memory (in bytes) 
 	parameter TREE_DEPTH=$clog2(MEMORY_SIZE/BYTES_PER_BLOCK) // binary tree depth log(MEMORY_SIZE/BYTES_PER_BLOCK), also represent the number of bits needed to describe block number
 )(
 	input logic clock,
