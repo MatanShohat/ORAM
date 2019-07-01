@@ -30,7 +30,6 @@ module oram_driver #(
 	logic [(BYTE_WIDTH*BYTES_PER_WORD)-1:0] r_value;
 	logic output_ready;
 	
-	initial $readmemh(INIT_FILE, memory);
 
 	assign clk = clock;
 	assign rst = reset;
@@ -39,7 +38,7 @@ module oram_driver #(
 	assign rw_block_number = avs_a_address[ADDRESS_WIDTH-1 -: TREE_DEPTH];
 	for (i=0; i<BYTES_PER_WORD; i=i+1) begin
 		assign w_value[i*BYTE_WIDTH +: BYTE_WIDTH] = avs_a_writedata[i];
-		assign r_value[i*BYTE_WIDTH +: BYTE_WIDTH] = avs_a_readdata[i];
+		assign avs_a_readdata[i] = r_value[i*BYTE_WIDTH +: BYTE_WIDTH];
 	end	
 
 	oram_module oram(.*);	
