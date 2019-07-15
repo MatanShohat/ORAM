@@ -40,17 +40,17 @@ module oram_module(
 				//print_oram(oram);
 			end else begin // owrite operation
 				$display ("performing write operation on block number %h (hexadecimal) with value %h (hexadecimal)", rw_block_number, w_value);
-				print_oram(oram);
+				//print_oram(oram);
 				read_val = fetch(oram, rw_block_number);
 				read_val.val = w_value;
 				read_val.empty_n = 1;
 				new_tuple = update_position_map(rw_block_number, read_val);
 				put_back(oram, new_tuple);
-				print_oram(oram);
+				//print_oram(oram);
 				flush(oram);
 				output_ready <= 1;
 				$display ("performing write operation on block number %h (hexadecimal) with value %h (hexadecimal) is DONE!", rw_block_number, w_value);
-				print_oram(oram);
+				//print_oram(oram);
 			end
 		end
 

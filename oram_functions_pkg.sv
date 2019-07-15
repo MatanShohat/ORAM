@@ -61,10 +61,11 @@ package oram_functions_pkg;
 		integer i;
 		integer j;
 
-		//$display("Fetch start");
+		//$display("Fetch start with block number %p", block_number);
 		b_pos = oram.pos_map[block_number]; // get pos of input block
 
 		if (b_pos.empty_n == 0) begin // if block is not assigned to pos map
+			//$display("pos is empty");
 			b_pos.pos = $urandom_range((2<<(TREE_DEPTH-1))-1,0); // assign it to random leaf
 			b_pos.empty_n = 1; // mark the assignment valid
 			oram.pos_map[block_number] = b_pos; // write back to the oram data structure
@@ -73,12 +74,12 @@ package oram_functions_pkg;
 		current_bucket_number = 1; // remember the 1 offset
 		current_bucket = oram.oram_tree[current_bucket_number - 1]; // check if root contains the required block
 
-		for (j=0; j < (K-1); j=j+1) begin // go over root bucket
+		for (j=0; j < K; j=j+1) begin // go over root bucket
 			//$display("Going over the root bucket");
 			current_tuple = current_bucket.bucket[j]; // for each tuple in bucket
 			if (current_tuple.empty_n && current_tuple.b_pos.empty_n && current_tuple.b_pos.pos == b_pos.pos && current_tuple.b_number == block_number ) begin // if given tuple matches requested block number and block pos
 				r_value = current_tuple.b_val; // return its value
-				current_tuple.empty_n = 0; // remove the tuple
+				oram.oram_tree[current_bucket_number - 1].bucket[j].empty_n = 0; // remove the tuple
 			end
 		end
 
@@ -87,11 +88,12 @@ package oram_functions_pkg;
 			current_bit = b_pos.pos[i]; // get current bit from pos
 			current_bucket_number = 2*current_bucket_number + current_bit; // advance down the tree
 			current_bucket = oram.oram_tree[current_bucket_number - 1]; // get matched tree node
-			for (int j=0; j< (K-1); j=j+1) begin // go over current_bucket bucket
+			for (int j=0; j< K; j=j+1) begin // go over current_bucket bucket
 				current_tuple = current_bucket.bucket[j]; // for each tuple in bucket
 				if (current_tuple.empty_n && current_tuple.b_pos.empty_n && current_tuple.b_pos.pos == b_pos.pos && current_tuple.b_number == block_number ) begin // if given tuple matches requested block number and block pos
 					r_value = current_tuple.b_val; // return its value
-					current_tuple.empty_n = 0; // remove the tuple
+					oram.oram_tree[current_bucket_number - 1].bucket[j].empty_n = 0; // remove the tuple
+					//$display("removed block number %p", block_number);
 				end
 			end
 		end
@@ -105,6 +107,7 @@ package oram_functions_pkg;
 		//$display("update_position_map Start");
 		new_block_tuple.b_val = block_val; // assign block val (return value from oread_fetch)
 		new_block_tuple.b_pos.pos = $urandom_range((1<<(TREE_DEPTH-1))-1,0); // assign block_number to a new random leaf
+		//$display("new pos: %d, to block: %p", new_block_tuple.b_pos.pos, block_number);
 		new_block_tuple.b_pos.empty_n = 1; // mark the assignment valid
 		new_block_tuple.b_number = block_number; // assign block number
 		new_block_tuple.empty_n = 1; // mark the assignment valid
@@ -116,9 +119,9 @@ package oram_functions_pkg;
 		memory_tuple current_tuple;
 		integer j;
 		//$display("put_back Start");
-
-		for (j=0; j< (K-1); j=j+1) begin // go over bucket
-			//$display("go over the bucket");
+	
+		for (j=0; j<K; j=j+1) begin // go over bucket
+			//$display("go over the bucket in spot %d", j);
 			current_tuple = oram.oram_tree[0].bucket[j]; // for each tuple in bucket
 			if (current_tuple.empty_n == 0) begin // if empty tuple was found
 				oram.oram_tree[0].bucket[j] = new_block_tuple; // insert the new tuple to tree
@@ -129,6 +132,8 @@ package oram_functions_pkg;
 			end
 		end
 		$display ("overflow");
+		//print_oram(oram);
+		$stop;
 		return;
 	endfunction
 
@@ -167,6 +172,8 @@ package oram_functions_pkg;
 		// print the bucket
 		$write("|");
         for (i = 0; i<K; i++) begin
+			//if (node == 1)
+			//	$display("aaaaa: %d", oram.oram_tree[node-1].bucket[i].empty_n);
 			if (oram.oram_tree[node-1].bucket[i].empty_n == 0) begin
 				$write("X ");
             end else begin
@@ -218,7 +225,7 @@ package oram_functions_pkg;
 		current_bucket_number[0] = current_bit; // advance down the tree
 		lower_bucket = oram.oram_tree[current_bucket_number - 1]; // bucket which contains the tuples from the down level
 
-		for (j=0; j< (K-1); j=j+1) begin // go over higher bucket
+		for (j=0; j< K; j=j+1) begin // go over higher bucket
 			//$display("Go over higher buckets");
 			current_higher_tuple = higher_bucket.bucket[j]; // for each tuple in bucket
 			if (current_higher_tuple.empty_n == 0)  begin
@@ -226,7 +233,7 @@ package oram_functions_pkg;
 			end else if (current_higher_tuple.b_pos.pos[depth - 1] != pos[depth - 1]) begin
 				continue;
 			end else begin // tuple's pos still in path, try to push it down one level
-				for (kk=0; kk< (K-1); kk=kk+1) begin // go over lower bucket
+				for (kk=0; kk< K; kk=kk+1) begin // go over lower bucket
 					//$display("j = %d, k = %d",j,kk);
 					current_lower_tuple = lower_bucket.bucket[kk]; // for each tuple in bucket
 					if (current_lower_tuple.empty_n == 0) begin // if it is empty
